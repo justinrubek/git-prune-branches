@@ -38,6 +38,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
     if !args.dry_run {
         to_delete.for_each(|reference| {
+            let name = reference.name().shorten();
+            info!(?name, "deleting branch");
             reference.delete().expect("failed to delete reference");
         });
     } else {
