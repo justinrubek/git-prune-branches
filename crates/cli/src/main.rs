@@ -7,7 +7,10 @@ use tracing::{debug, info};
 mod commands;
 
 fn main() -> Result<(), Box<dyn Error>> {
-    tracing_subscriber::fmt::init();
+    tracing_subscriber::fmt()
+        .without_time()
+        .with_target(false)
+        .init();
 
     let args = Args::parse();
 
