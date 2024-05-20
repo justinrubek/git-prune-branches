@@ -1,0 +1,33 @@
+name: release
+on:
+  push:
+    tags:
+      - "*"
+jobs:
+  publish-github:
+    name: publish to github releases
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install nix
+        uses: cachix/install-nix-action@v27
+        with:
+          extra_nix_config: |
+            access-tokens = github=${{ secrets.GITHUB_TOKEN }}
+            extra-substituters = https://cache.garnix.io
+            extra-trusted-public-keys = cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g=
+      - name: generate changelog
+        env:
+          VERSION: ${{ github.ref_name }}
+        run: |
+          nix develop .#ci -c -- bomp changelog --at ${VERSION} > GITHUB_CHANGELOG.md
+      - name: generate release
+        uses: softprops/action-gh-release@v2
+        with:
+          body_path: GITHUB_CHANGELOG.md
+          tag_name: ${{ steps.get-version.outputs.version }}

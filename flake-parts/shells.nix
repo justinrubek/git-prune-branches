@@ -8,7 +8,7 @@
     ...
   }: let
     inherit (self'.packages) rust-toolchain;
-    inherit (self'.legacyPackages) cargoExtraPackages ciPackages;
+    inherit (self'.legacyPackages) cargoExtraPackages;
 
     devTools = [
       # rust tooling
@@ -19,11 +19,12 @@
       # formatting
       self'.packages.treefmt
       # misc
+      inputs'.bomper.packages.bomper
     ];
   in {
     devShells = {
       default = pkgs.mkShell rec {
-        packages = devTools ++ cargoExtraPackages ++ ciPackages;
+        packages = devTools ++ cargoExtraPackages;
 
         LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath packages;
         RUST_SRC_PATH = "${self'.packages.rust-toolchain}/lib/rustlib/src/rust/src";
