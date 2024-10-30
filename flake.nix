@@ -21,11 +21,12 @@
       url = "github:justinrubek/bomper";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    systems.url = "github:nix-systems/default";
   };
 
   outputs = inputs:
     inputs.flake-parts.lib.mkFlake {inherit inputs;} {
-      systems = ["x86_64-linux" "aarch64-linux"];
+      systems = import inputs.systems;
       imports = [
         inputs.pre-commit-hooks.flakeModule
 
