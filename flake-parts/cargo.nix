@@ -1,6 +1,7 @@
 {inputs, ...}: {
   perSystem = {
     config,
+    lib,
     pkgs,
     system,
     inputs',
@@ -8,9 +9,18 @@
     ...
   }: let
     # packages required for building the rust packages
-    extraPackages = [
-      pkgs.pkg-config
-    ];
+    extraPackages =
+      [
+        pkgs.pkg-config
+      ]
+      ++ lib.optionals pkgs.stdenv.isDarwin [
+        pkgs.libiconv
+        pkgs.darwin.apple_sdk.frameworks.AppKit
+        pkgs.darwin.apple_sdk.frameworks.CoreFoundation
+        pkgs.darwin.apple_sdk.frameworks.CoreServices
+        pkgs.darwin.apple_sdk.frameworks.Foundation
+        pkgs.darwin.apple_sdk.frameworks.Security
+      ];
     withExtraPackages = base: base ++ extraPackages;
 
     craneLib = (inputs.crane.mkLib pkgs).overrideToolchain self'.packages.rust-toolchain;
